@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora</title>
+    <link rel="stylesheet" href="hito.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="calculator">
+            <div class="calculator__display">0</div>
+
+            <div class="calculator__keys">
+                <button class="key--operator" data-action="add">+</button>
+                <button class="key--operator" data-action="subtract">-</button>
+                <button class="key--operator" data-action="multiply">&times;</button>
+                <button class="key--operator" data-action="divide">÷</button>
+                <button class="key--operator" data-action="percentage">%</button>
+                <button class="key--operator" data-action="square">x²</button>
+                <button class="key--operator" data-action="sqrt">√</button>
+                <button>7</button>
+                <button>8</button>
+                <button>9</button>
+                <button>4</button>
+                <button>5</button>
+                <button>6</button>
+                <button>1</button>
+                <button>2</button>
+                <button>3</button>
+                <button>0</button>
+                <button data-action="decimal">.</button>
+                <button data-action="clear">AC</button>
+                <button class="key--equal" data-action="calculate">=</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Obtener referencias a los elementos del DOM
+        const display = document.querySelector('.calculator__display');
+        const keys = document.querySelector('.calculator__keys');
+
+        // Agregar un event listener a los botones
+        keys.addEventListener('click', e => {
+            if (e.target.matches('button')) {
+                const key = e.target;
+                const action = key.dataset.action;
+                const keyContent = key.textContent;
+                const displayedNum = display.textContent;
+
+                // Lógica para cada acción
+                if (!action) {
+                    // Si la tecla presionada es un número
+                    if (displayedNum === '0') {
+                        display.textContent = keyContent;
+                    } else {
+                        display.textContent = displayedNum + keyContent;
+                    }
+                }
+
+                if (action === 'decimal') {
+                    // Si la tecla presionada es el punto decimal
+                    if (!displayedNum.includes('.')) {
+                        display.textContent = displayedNum + '.';
+                    }
+                }
+
+                if (action === 'clear') {
+                    // Si la tecla presionada es el botón AC (borrar todo)
+                    display.textContent = '0';
+                }
+
+                function clearDisplay() {
+                    display.textContent = '0';
+                }
+
+
+                if (action === 'add' || action === 'subtract' || action === 'multiply' || action === 'divide' || action === 'percentage') {
+                    // Si la tecla presionada es un operador
+                    key.classList.add('is-depressed');
+                    // Guardar el primer número y la operación seleccionada
+                    sessionStorage.setItem('firstNumber', displayedNum);
+                    sessionStorage.setItem('operator', action);
+                    clearDisplay(); // Llama a la función para borrar el número en el display
+                }
+
+                if (action === 'sqrt') {
+                    // Si la tecla presionada es la raíz cuadrada
+                    const result = Math.sqrt(parseFloat(displayedNum));
+                    display.textContent = result;
+                }
+
+                if (action === 'calculate') {
+                    // Si la tecla presionada es el botón de igual (=)
+                    const firstNumber = parseFloat(sessionStorage.getItem('firstNumber'));
+                    const operator = sessionStorage.getItem('operator');
+                    const secondNumber = parseFloat(displayedNum);
+                    let result = 0;
+
+                    if (operator === 'add') {
+                        result = firstNumber + secondNumber;
+                    } else if (operator === 'subtract') {
+                        result = firstNumber - secondNumber;
+                    } else if (operator === 'multiply') {
+                        result = firstNumber * secondNumber;
+                    } else if (operator === 'divide') {
+                        result = firstNumber / secondNumber;
+                    } else if (operator === 'percentage') {
+                        result = (firstNumber * secondNumber) / 100;
+                    }
+                    display.textContent = result;
+                    sessionStorage.removeItem('firstNumber');
+                    sessionStorage.removeItem('operator');
+                }
+
+                if (action === 'square') {
+                    const currentValue = parseFloat(displayedNum);
+                    const squaredValue = currentValue ** 2;
+                    display.textContent = squaredValue;
+                    calculator.dataset.previousKeyType = 'square';
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
